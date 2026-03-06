@@ -1,12 +1,19 @@
 {
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/admin/login/page": "app/admin/login/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/(public)/about/page": "app/(public)/about/page.js",
-  "/admin/page": "app/admin/page.js",
-  "/admin/posts/page": "app/admin/posts/page.js",
-  "/admin/posts/new/page": "app/admin/posts/new/page.js",
   "/admin/categories/page": "app/admin/categories/page.js",
-  "/admin/comments/page": "app/admin/comments/page.js",
+  "/(public)/category/[slug]/page": "app/(public)/category/[slug]/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/(public)/contact/page": "app/(public)/contact/page.js",
+  "/(public)/blog/page": "app/(public)/blog/page.js",
+  "/(public)/blog/[slug]/page": "app/(public)/blog/[slug]/page.js",
   "/admin/messages/page": "app/admin/messages/page.js",
-  "/admin/settings/page": "app/admin/settings/page.js"
+  "/admin/posts/edit/[id]/page": "app/admin/posts/edit/[id]/page.js",
+  "/(public)/page": "app/(public)/page.js",
+  "/admin/comments/page": "app/admin/comments/page.js",
+  "/admin/posts/page": "app/admin/posts/page.js",
+  "/admin/settings/page": "app/admin/settings/page.js",
+  "/admin/posts/new/page": "app/admin/posts/new/page.js"
 }
