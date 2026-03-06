@@ -13,6 +13,7 @@ export interface Post {
   content: string;
   status: "draft" | "published";
   coverImage?: string;
+  pdfUrl?: string; // Support for PDF attachments
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
@@ -21,6 +22,18 @@ export interface Post {
   author: string;
   tags: string[];
   readingTime: number;
+  viewCount: number; // View tracking
+}
+
+export interface Visitor {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  lastVisit: string;
+  viewedPostId: string;
+  browser: string;
+  location: string;
 }
 
 export interface ContactMessage {
@@ -128,6 +141,7 @@ export const posts: Post[] = [
     author: "Alex Johnson",
     tags: ["study", "habits", "productivity"],
     readingTime: 6,
+    viewCount: 1240,
   },
   {
     id: "2",
@@ -145,6 +159,7 @@ export const posts: Post[] = [
     author: "Sarah Chen",
     tags: ["typescript", "javascript", "programming"],
     readingTime: 8,
+    viewCount: 890,
   },
   {
     id: "3",
@@ -162,6 +177,7 @@ export const posts: Post[] = [
     author: "Alex Johnson",
     tags: ["tools", "productivity", "apps"],
     readingTime: 5,
+    viewCount: 2100,
   },
   {
     id: "4",
@@ -179,6 +195,7 @@ export const posts: Post[] = [
     author: "Michael Park",
     tags: ["career", "interview", "tech"],
     readingTime: 10,
+    viewCount: 560,
   },
   {
     id: "5",
@@ -196,6 +213,7 @@ export const posts: Post[] = [
     author: "Sarah Chen",
     tags: ["css", "grid", "frontend"],
     readingTime: 7,
+    viewCount: 430,
   },
   {
     id: "6",
@@ -213,6 +231,7 @@ export const posts: Post[] = [
     author: "Alex Johnson",
     tags: ["pomodoro", "focus", "study"],
     readingTime: 4,
+    viewCount: 310,
   },
   {
     id: "7",
@@ -229,6 +248,7 @@ export const posts: Post[] = [
     author: "Sarah Chen",
     tags: ["react", "hooks", "frontend"],
     readingTime: 9,
+    viewCount: 0,
   },
 ];
 
@@ -259,5 +279,94 @@ export const contactMessages: ContactMessage[] = [
     message: "Thanks for the TypeScript article! Could you write a follow-up on generics? That topic confuses me.",
     createdAt: "2026-03-04T18:45:00Z",
     status: "unread",
+  },
+];
+
+export const visitors: Visitor[] = [
+  {
+    id: "101",
+    name: "John Doe",
+    email: "john@example.com",
+    lastVisit: "2026-03-06T14:20:00Z",
+    viewedPostId: "1",
+    browser: "Chrome",
+    location: "New York, USA",
+  },
+  {
+    id: "102",
+    name: "Alice Smith",
+    email: "alice@example.com",
+    lastVisit: "2026-03-06T15:45:00Z",
+    viewedPostId: "3",
+    browser: "Firefox",
+    location: "London, UK",
+  },
+  {
+    id: "103",
+    name: "Bob Wilson",
+    email: "bob@example.com",
+    lastVisit: "2026-03-06T16:10:00Z",
+    viewedPostId: "1",
+    browser: "Safari",
+    location: "Toronto, Canada",
+  },
+  {
+    id: "104",
+    name: "Eva Martinez",
+    email: "eva@example.com",
+    lastVisit: "2026-03-06T17:30:00Z",
+    viewedPostId: "2",
+    browser: "Chrome",
+    location: "Madrid, Spain",
+  },
+];
+
+export interface Comment {
+  id: string;
+  postId: string;
+  author: string;
+  email: string;
+  avatar?: string;
+  content: string;
+  createdAt: string;
+  status: "approved" | "pending" | "spam";
+}
+
+export const comments: Comment[] = [
+  {
+    id: "1",
+    postId: "1",
+    author: "Liam Neeson",
+    email: "liam@example.com",
+    content: "Excellent tips! I've already started implementing the Pomodoro technique.",
+    createdAt: "2026-03-05T09:00:00Z",
+    status: "approved",
+  },
+  {
+    id: "2",
+    postId: "1",
+    author: "Emma Watson",
+    email: "emma.w@example.com",
+    content: "I've been looking for something like this for ages. Thank you!",
+    createdAt: "2026-03-05T10:30:00Z",
+    status: "approved",
+  },
+  {
+    id: "3",
+    postId: "2",
+    author: "Chris Evans",
+    email: "cap@example.com",
+    content: "TypeScript has been a game changer for my workflow. Great intro!",
+    createdAt: "2026-03-06T11:00:00Z",
+    status: "approved",
+  },
+  {
+    id: "4",
+    postId: "3",
+    author: "Robert Downey Jr.",
+    email: "tony@stark.com",
+    content: "I prefer my own custom tools, but these are top-tier for most people. Jarvis-approved.",
+    createdAt: "2026-03-06T12:00:00Z",
+    status: "pending",
   },
 ];

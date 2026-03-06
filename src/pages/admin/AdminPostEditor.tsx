@@ -1,9 +1,12 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { categories } from "@/data/mock";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { posts, categories } from "@/data/mock";
 import MarkdownRenderer from "@/components/blog/MarkdownRenderer";
+import { toast } from "sonner";
+import { FileText, Image, Settings, Eye, Edit3, Send, X, Plus } from "lucide-react";
 
 const AdminPostEditor = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [showPreview, setShowPreview] = useState(false);
   const [form, setForm] = useState({
@@ -11,11 +14,33 @@ const AdminPostEditor = () => {
     slug: "",
     excerpt: "",
     coverImage: "",
+    pdfUrl: "",
     categoryId: "",
     tags: "",
     content: "",
     status: "draft" as "draft" | "published",
   });
+
+  useEffect(() => {
+    if (id) {
+      const post = posts.find((p) => p.id === id);
+      if (post) {
+        setForm({
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt,
+          coverImage: post.coverImage || "",
+          pdfUrl: post.pdfUrl || "",
+          categoryId: post.categoryId,
+          tags: post.tags.join(", "),
+          content: post.content,
+          status: post.status,
+        });
+      }
+    } else if (categories.length > 0) {
+      setForm(prev => ({ ...prev, categoryId: categories[0].id }));
+    }
+  }, [id]);
 
   const generateSlug = (title: string) =>
     title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -26,143 +51,221 @@ const AdminPostEditor = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Mock save
-    alert("Post saved (mock)!");
+    toast.success(id ? "Changes saved successfully!" : "Post published successfully!");
     navigate("/admin/posts");
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground">
-          {form.title ? "Edit Post" : "New Post"}
-        </h1>
-        <div className="flex gap-2">
+    <div className="max-w-full px-4 sm:px-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="flex items-center justify-between mb-8 pb-6 border-b border-border">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            {id ? "Edit Masterpiece" : "Craft New Post"}
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm font-medium">Compose and configure your content for the world.</p>
+        </div>
+        <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setShowPreview(!showPreview)}
-            className="px-4 py-2 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-border text-sm font-bold text-foreground hover:bg-muted transition-all"
           >
-            {showPreview ? "Editor" : "Preview"}
+            {showPreview ? <Edit3 size={16} /> : <Eye size={16} />}
+            {showPreview ? "Back to Editor" : "Live Preview"}
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+          >
+            <Send size={16} /> {id ? "Save Changes" : "Publish Post"}
           </button>
         </div>
       </div>
 
       {showPreview ? (
-        <div className="bg-card border border-border rounded-lg p-8">
-          <h2 className="text-3xl font-bold text-foreground mb-4">{form.title || "Untitled"}</h2>
-          <MarkdownRenderer content={form.content || "*No content yet*"} />
+        <div className="bg-white border border-border rounded-[32px] p-12 shadow-sm animate-in zoom-in-95 duration-300">
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-10 text-center">
+              <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest mb-4 inline-block">
+                {categories.find(c => c.id === form.categoryId)?.name || "Uncategorized"}
+              </span>
+              <h2 className="text-5xl font-extrabold text-foreground tracking-tight mb-6 leading-[1.1]">{form.title || "Your Captivating Title"}</h2>
+              <p className="text-xl text-muted-foreground font-medium leading-relaxed italic">{form.excerpt}</p>
+            </div>
+            {form.coverImage && (
+              <img src={form.coverImage} className="w-full aspect-video object-cover rounded-[24px] mb-12 shadow-2xl" alt="Cover" />
+            )}
+            <div className="prose-blog !max-w-none">
+              <MarkdownRenderer content={form.content || "*Your wisdom starts here...*"} />
+            </div>
+            {form.pdfUrl && (
+              <div className="mt-12 p-6 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-white rounded-xl text-indigo-600 shadow-sm"><FileText /></div>
+                  <div>
+                    <p className="text-sm font-bold text-indigo-900">Attachment Available</p>
+                    <p className="text-xs text-indigo-700/70 font-medium">Download the full PDF version of this post.</p>
+                  </div>
+                </div>
+                <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors">Download PDF</button>
+              </div>
+            )}
+          </div>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-5 max-w-3xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Title</label>
-              <input
-                type="text"
-                value={form.title}
-                onChange={(e) => handleTitleChange(e.target.value)}
-                className="w-full px-3 py-2.5 border border-border rounded-lg bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Slug</label>
-              <input
-                type="text"
-                value={form.slug}
-                onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                className="w-full px-3 py-2.5 border border-border rounded-lg bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary"
-                required
-              />
-            </div>
-          </div>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Main Content Area */}
+            <div className="lg:col-span-8 space-y-6">
+              <div className="p-8 bg-white border border-border rounded-3xl shadow-sm space-y-6">
+                <div>
+                  <label className="text-[12px] font-black uppercase tracking-widest text-muted-foreground/60 mb-3 block ml-1">Title of your post</label>
+                  <input
+                    type="text"
+                    value={form.title}
+                    onChange={(e) => handleTitleChange(e.target.value)}
+                    className="w-full px-0 py-3 bg-transparent text-5xl font-black text-foreground placeholder:text-muted-foreground/10 focus:outline-none transition-all border-b-2 border-border/30 focus:border-primary"
+                    placeholder="Start typing..."
+                    required
+                  />
+                </div>
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Excerpt</label>
-            <textarea
-              value={form.excerpt}
-              onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
-              rows={2}
-              className="w-full px-3 py-2.5 border border-border rounded-lg bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary resize-none"
-            />
-          </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">Unique Slug</label>
+                    <input
+                      type="text"
+                      value={form.slug}
+                      onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                      className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-mono"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5 block">Tags (comma-separated)</label>
+                    <input
+                      type="text"
+                      value={form.tags}
+                      onChange={(e) => setForm({ ...form, tags: e.target.value })}
+                      className="w-full px-4 py-2.5 border border-border rounded-xl bg-muted/20 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+                      placeholder="habit, learning, productivity"
+                    />
+                  </div>
+                </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Cover Image URL</label>
-              <input
-                type="url"
-                value={form.coverImage}
-                onChange={(e) => setForm({ ...form, coverImage: e.target.value })}
-                className="w-full px-3 py-2.5 border border-border rounded-lg bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary"
-              />
+                <div>
+                  <label className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2 block">Executive Summary</label>
+                  <textarea
+                    value={form.excerpt}
+                    onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
+                    rows={3}
+                    className="w-full px-5 py-4 border-2 border-border/50 rounded-2xl bg-muted/10 text-base focus:outline-none focus:border-primary focus:bg-white transition-all font-medium resize-none leading-relaxed"
+                    placeholder="Give readers a quick overview..."
+                  />
+                </div>
+              </div>
+
+              <div className="p-1 bg-white border border-border rounded-3xl shadow-sm">
+                <div className="flex items-center gap-2 p-4 border-b border-border/50 text-muted-foreground justify-between">
+                  <span className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground ml-2">Master Content Editor</span>
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 rounded-full bg-red-400/20" />
+                    <span className="w-2 h-2 rounded-full bg-amber-400/20" />
+                    <span className="w-2 h-2 rounded-full bg-green-400/20" />
+                  </div>
+                </div>
+                <textarea
+                  value={form.content}
+                  onChange={(e) => setForm({ ...form, content: e.target.value })}
+                  rows={20}
+                  placeholder="Write your story using Markdown..."
+                  className="w-full p-8 bg-transparent text-base text-foreground font-sans focus:outline-none resize-none leading-relaxed custom-scrollbar"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Category</label>
-              <select
-                value={form.categoryId}
-                onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-                className="w-full px-3 py-2.5 border border-border rounded-lg bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/20"
-                required
-              >
-                <option value="">Select category</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
+
+            {/* Sidebar Settings */}
+            <div className="lg:col-span-4 space-y-6">
+              <div className="p-6 bg-white border border-border rounded-3xl shadow-sm sticky top-24">
+                <div className="flex items-center gap-2 mb-6 text-primary">
+                  <Settings size={18} strokeWidth={2.5} />
+                  <h3 className="font-bold text-sm uppercase tracking-wider">Post Configuration</h3>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Publishing Status</label>
+                    <select
+                      value={form.status}
+                      onChange={(e) => setForm({ ...form, status: e.target.value as "draft" | "published" })}
+                      className="w-full px-4 py-3 border border-border rounded-2xl bg-muted/20 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all outline-none appearance-none"
+                    >
+                      <option value="draft">Draft (Save privately)</option>
+                      <option value="published">Published (Go Live)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2 block">Content Category</label>
+                    <select
+                      value={form.categoryId}
+                      onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+                      className="w-full px-4 py-3 border border-border rounded-2xl bg-muted/20 text-sm font-bold focus:outline-none focus:ring-4 focus:ring-primary/5 transition-all outline-none appearance-none"
+                      required
+                    >
+                      <option value="">Choose a topic...</option>
+                      {categories.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="h-px bg-border/50 my-2" />
+
+                  <div>
+                    <label className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60 mb-3 block">Feature Image Assets</label>
+                    <div className="relative group">
+                      <input
+                        type="url"
+                        value={form.coverImage}
+                        onChange={(e) => setForm({ ...form, coverImage: e.target.value })}
+                        className="w-full pl-5 pr-14 py-4 border-2 border-border/50 rounded-2xl bg-muted/10 text-base font-bold focus:outline-none focus:border-primary focus:bg-white transition-all outline-none"
+                        placeholder="Unsplash / Image URL"
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/30 group-hover:text-primary transition-colors">
+                        <Image size={24} strokeWidth={2.5} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/60 mb-3 block">PDF Resource Link</label>
+                    <div className="relative group">
+                      <input
+                        type="url"
+                        value={form.pdfUrl}
+                        onChange={(e) => setForm({ ...form, pdfUrl: e.target.value })}
+                        className="w-full pl-5 pr-14 py-4 border-2 border-border/50 rounded-2xl bg-muted/10 text-base font-bold focus:outline-none focus:border-primary focus:bg-white transition-all outline-none"
+                        placeholder="External PDF Resource"
+                      />
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/30 group-hover:text-indigo-500 transition-colors">
+                        <FileText size={24} strokeWidth={2.5} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-8 border-t border-border/50">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/admin/posts")}
+                    className="w-full py-4 text-sm font-black text-muted-foreground hover:text-foreground transition-all uppercase tracking-widest"
+                  >
+                    Discard Draft
+                  </button>
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Status</label>
-              <select
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value as "draft" | "published" })}
-                className="w-full px-3 py-2.5 border border-border rounded-lg bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/20"
-              >
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Tags (comma-separated)</label>
-            <input
-              type="text"
-              value={form.tags}
-              onChange={(e) => setForm({ ...form, tags: e.target.value })}
-              placeholder="react, typescript, tutorial"
-              className="w-full px-3 py-2.5 border border-border rounded-lg bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">
-              Content (Markdown)
-            </label>
-            <textarea
-              value={form.content}
-              onChange={(e) => setForm({ ...form, content: e.target.value })}
-              rows={16}
-              placeholder="Write your post in Markdown..."
-              className="w-full px-3 py-2.5 border border-border rounded-lg bg-card text-foreground text-sm font-mono focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary resize-y"
-            />
-          </div>
-
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              className="px-6 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90"
-            >
-              Save Post
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/admin/posts")}
-              className="px-6 py-2.5 rounded-lg border border-border text-sm font-medium text-foreground hover:bg-muted"
-            >
-              Cancel
-            </button>
           </div>
         </form>
       )}

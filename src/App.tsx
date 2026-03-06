@@ -20,6 +20,7 @@ import AdminPostsPage from "@/pages/admin/AdminPostsPage";
 import AdminPostEditor from "@/pages/admin/AdminPostEditor";
 import AdminCategoriesPage from "@/pages/admin/AdminCategoriesPage";
 import AdminMessagesPage from "@/pages/admin/AdminMessagesPage";
+import AdminCommentsPage from "@/pages/admin/AdminCommentsPage";
 import AdminSettingsPage from "@/pages/admin/AdminSettingsPage";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="posts/new" element={<AdminPostEditor />} />
             <Route path="posts/edit/:id" element={<AdminPostEditor />} />
             <Route path="categories" element={<AdminCategoriesPage />} />
+            <Route path="comments" element={<AdminCommentsPage />} />
             <Route path="messages" element={<AdminMessagesPage />} />
             <Route path="settings" element={<AdminSettingsPage />} />
           </Route>
