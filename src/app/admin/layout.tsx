@@ -35,14 +35,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     // Prevent hydration mismatch
     if (!isClient) return <div className="min-h-screen bg-[#FDFCFB]" />;
 
-    // If not authenticated and not on login page, show nothing (redirect handles it)
-    if (!getAuth() && pathname !== "/admin/login") return null;
-
-    // If on login page, render just the children (login page) without the sidebar layout
-    if (pathname === "/admin/login") {
-        return <>{children}</>;
-    }
-
     return (
         <div className="min-h-screen bg-[#FDFCFB] flex text-[#2D3139]">
             {/* Sidebar */}

@@ -1,3 +1,5 @@
+"use client";
+
 import { posts, categories, contactMessages, visitors, comments } from "@/data/mock";
 import { FileText, CheckCircle, MessageSquare, TrendingUp, Eye, Users, Globe, MessageCircle } from "lucide-react";
 
