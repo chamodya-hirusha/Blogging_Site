@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import type { Post } from "@/data/mock";
 import CategoryBadge from "./CategoryBadge";
 
@@ -16,7 +16,7 @@ const PostCard = ({ post }: PostCardProps) => {
   return (
     <article className="bg-card border border-border rounded-lg overflow-hidden shadow-sm">
       {post.coverImage && (
-        <Link to={`/blog/${post.slug}`}>
+        <Link href={`/blog/${post.slug}`}>
           <img
             src={post.coverImage}
             alt={post.title}
@@ -30,7 +30,7 @@ const PostCard = ({ post }: PostCardProps) => {
           <CategoryBadge category={post.category} />
           <span className="text-xs text-muted-foreground">{post.readingTime} min read</span>
         </div>
-        <Link to={`/blog/${post.slug}`}>
+        <Link href={`/blog/${post.slug}`}>
           <h3 className="text-lg font-semibold text-foreground mb-2 leading-snug hover:text-primary">
             {post.title}
           </h3>

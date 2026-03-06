@@ -1,0 +1,12 @@
+{
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/(public)/about/page": "app/(public)/about/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/posts/page": "app/admin/posts/page.js",
+  "/admin/posts/new/page": "app/admin/posts/new/page.js",
+  "/admin/categories/page": "app/admin/categories/page.js",
+  "/admin/comments/page": "app/admin/comments/page.js",
+  "/admin/messages/page": "app/admin/messages/page.js",
+  "/admin/settings/page": "app/admin/settings/page.js"
+}

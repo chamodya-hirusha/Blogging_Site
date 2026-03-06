@@ -1,5 +1,8 @@
+"use client";
+
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { siteSettings } from "@/data/mock";
 
@@ -12,13 +15,14 @@ const navLinks = [
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const location = useLocation();
+  const pathname = usePathname();
 
   return (
     <header className="border-b border-border bg-card">
       <div className="container flex items-center justify-between h-16">
-        <Link to="/" className="text-xl font-bold text-primary">
-          {siteSettings.logoText}
+        <Link href="/" className="flex items-center gap-2">
+          <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+          <span className="text-xl font-bold text-primary">{siteSettings.logoText}</span>
         </Link>
 
         {/* Desktop nav */}
@@ -26,12 +30,11 @@ const Navbar = () => {
           {navLinks.map((link) => (
             <Link
               key={link.href}
-              to={link.href}
-              className={`text-sm font-medium ${
-                location.pathname === link.href
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
+              href={link.href}
+              className={`text-sm font-medium ${pathname === link.href
+                ? "text-primary"
+                : "text-muted-foreground hover:text-foreground"
+                }`}
             >
               {link.label}
             </Link>
@@ -54,12 +57,11 @@ const Navbar = () => {
           {navLinks.map((link) => (
             <Link
               key={link.href}
-              to={link.href}
-              className={`block px-4 py-3 text-sm font-medium border-b border-border ${
-                location.pathname === link.href
-                  ? "text-primary bg-accent"
-                  : "text-muted-foreground"
-              }`}
+              href={link.href}
+              className={`block px-4 py-3 text-sm font-medium border-b border-border ${pathname === link.href
+                ? "text-primary bg-accent"
+                : "text-muted-foreground"
+                }`}
               onClick={() => setMobileOpen(false)}
             >
               {link.label}
